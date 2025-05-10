@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import fastifyWs from 'fastify-ws';
+import fastifyWs from "@fastify/websocket";
 
 const fastify = Fastify();
 
