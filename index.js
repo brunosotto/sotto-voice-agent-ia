@@ -1,12 +1,10 @@
 import Fastify from "fastify";
 import WebSocket from "ws";
-import dotenv from "dotenv";
 import fastifyFormBody from "@fastify/formbody";
 import fastifyWs from "@fastify/websocket";
 import fetch from "node-fetch";
 import https from "https";
 
-dotenv.config();
 const { OPENAI_API_KEY } = process.env;
 
 if (!OPENAI_API_KEY) {
@@ -20,13 +18,13 @@ fastify.register(fastifyWs);
 
 function obterDataFormatada() {
     const hoje = new Date();
-    const opções = {
+    const opcoes = {
         day: "numeric",
         month: "long",
         year: "numeric",
         timeZone: "America/Sao_Paulo",
     };
-    return hoje.toLocaleDateString("pt-BR", opções);
+    return hoje.toLocaleDateString("pt-BR", opcoes);
 }
 
 const SYSTEM_MESSAGE_BASE = `Você é uma assistente telefônica da clínica Modelo. Nessa clínica atendem os profissionais listados no XML abaixo. hoje é dia ${obterDataFormatada()}, e você deve receber ligações de pessoas com intenção de marcar consulta com um dos profissionais, ou ambos... você pode fornecer duas datas disponíveis por vez e perguntar se alguma delas é de interesse do usuário, se não for, pode oferecer alguma outra data, como podem ter vários dias com vários horários cada, você pode começar perguntando se prefere pela manhã ou pela tarde, e baseado nisso, sugerir horários livres que estão na lista abaixo.
@@ -51,7 +49,7 @@ Caso o numero de telefone não seja o mesmo que o cliente usou para ligar, pergu
 </rules>`;
 
 async function fetchAgendaData() {
-    const url = "https://srv658237.hstgr.cloud/clinica.php";
+    const url = process.env.URL_CLINICA;
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
     try {
@@ -65,7 +63,7 @@ async function fetchAgendaData() {
     }
 }
 
-const VOICE = "alloy";
+const VOICE = process.env.VOICE;
 const PORT = process.env.PORT || 5050;
 
 const LOG_EVENT_TYPES = [
@@ -127,7 +125,7 @@ fastify.register(async (fastify) => {
                 session: {
                     turn_detection: {
                         type: "server_vad",
-                        threshold: 0.5,
+                        threshold: 0.6,
                         prefix_padding_ms: 300,
                         silence_duration_ms: 750,
                     },
