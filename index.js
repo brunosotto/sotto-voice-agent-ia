@@ -88,6 +88,7 @@ fastify.all("/incoming-call", async (request, reply) => {
     global.SYSTEM_MESSAGE =
         SYSTEM_MESSAGE_BASE + "\n<Agenda>\n" + agendaData + "\n</Agenda>";
     console.log(SYSTEM_MESSAGE);
+    console.log('URL:::>>>', `wss://${request.headers.host}/media-stream`);
 
     const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
     <Response>
@@ -109,8 +110,9 @@ fastify.register(async (fastify) => {
         let markQueue = [];
         let responseStartTimestampTwilio = null;
 
+        console.log('vai abrir ws');
         const openAiWs = new WebSocket(
-            "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
+            "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17",
             {
                 headers: {
                     Authorization: `Bearer ${OPENAI_API_KEY}`,
